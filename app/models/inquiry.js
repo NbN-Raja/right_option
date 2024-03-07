@@ -1,15 +1,41 @@
-const mongoose= require("mongoose")
+const mongoose = require("mongoose");
 
+const PartnerSchema = new mongoose.Schema({
+    fullname: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        validate: {
+            validator: function(v) {
+                return /\S+@\S+\.\S+/.test(v);
+            },
+            message: props => `${props.value} is not a valid email address!`
+        }
+    },
+    phone: {
+        type: String,
+        required: true,
+        validate: {
+            validator: function(v) {
+                return /^[0-9]{10}$/.test(v);
+            },
+            message: props => `${props.value} is not a valid phone number!`
+        }
+    },
+    message: {
+        type: String,
+        required: true
+    },
+    updated_At: {
+        type: Date,
+        default: Date.now
+    }
+});
 
-PartnerSchema= new mongoose.Schema({
-         fullname: String,
-         email: String,
-         phone: String,
-         message: String,
-         updated_At: String   
-})
+const Partner = mongoose.model("Partner", PartnerSchema);
 
-
-const Partner= mongoose.model("partner",PartnerSchema)
-
-module.exports= Partner
+module.exports = Partner;

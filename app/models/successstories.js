@@ -2,12 +2,13 @@ const mongoose= require("mongoose")
 
 
 SuccessSchema= new mongoose.Schema({
-         name: String,
-         order: String,
-         image: String   
+    name: {type:String,required: true},
+    description:{type:String,required: true},
+    order: {type:Number,required: true},
+    image: {type:String}, 
 })
 
 
-const Success= mongoose.model("success",Success )
+const Success= mongoose.model("success",SuccessSchema )
 
 module.exports= Success

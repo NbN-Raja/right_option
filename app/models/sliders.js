@@ -1,15 +1,32 @@
-const mongoose= require("mongoose")
+const mongoose = require("mongoose");
 
+const SlidersSchema = new mongoose.Schema({
+    slogan: {
+        type: String,
+        required: true
+    },
+    title: {
+        type: String,
+        required: true
+    },
+  
+    image: {
+        type: String,
+        required: true
+    },
+    order: {
+        type: Number,
+        required: true,
+        // Validate that order is a positive integer
+        validate: {
+            validator: function(v) {
+                return Number.isInteger(v) && v > 0;
+            },
+            message: props => `${props.value} is not a valid order value!`
+        }
+    }
+});
 
-SlidersSchema= new mongoose.Schema({
-         slogan: String,
-         title: String,
-         link: String,
-         image: String,
-         order: String   
-})
+const Slider = mongoose.model("Slider", SlidersSchema);
 
-
-const Slider= mongoose.model("slider",SlidersSchema )
-
-module.exports= Slider
+module.exports = Slider;

@@ -6,6 +6,8 @@ const port = 4000
 
 app.use(express.json()); // Middleware to parse JSON request body
 app.use(express.urlencoded({ extended: true })); // Middleware to parse URL-encoded request body
+app.use('/public', express.static('public'));
+
 app.get('/', (req, res) => res.send('Hello World!'))
 
 
@@ -32,6 +34,8 @@ require("./app/routes/sliders.routes.js")(app)
 require("./app/routes/socialmedias.routes.js")(app)
 require("./app/routes/successstories.routes.js")(app)
 require("./app/routes/inquiry.routes.js")(app)
+require("./app/routes/homepage.routes.js")(app)
+require("./app/routes/contact.routes.js")(app)
 
 
 

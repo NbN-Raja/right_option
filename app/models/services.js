@@ -2,8 +2,11 @@ const mongoose= require("mongoose")
 
 
 ServiceSchema= new mongoose.Schema({
-         name: String,
-         image: String   
+    name: {type:String,required: true},
+    order: {type:Number,required: true},
+    description:{type:String,required: true},
+    short_description: {type:String,required: true},
+    image: {type:String}, 
 })
 
 

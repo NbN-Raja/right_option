@@ -2,11 +2,11 @@ const mongoose= require("mongoose")
 
 
 PartnerSchema= new mongoose.Schema({
-         name: String,
-         order: String,
-         description: String,
-         short_description: String,
-         image: String   
+    name: {type:String,required: true},
+    order: {type:Number,required: true},
+    description:{type:String,required: true},
+    short_description: {type:String,required: true},
+    image: {type:String}, 
 })
 
 

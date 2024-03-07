@@ -6,7 +6,7 @@ CountrySchema= new mongoose.Schema({
          order: { type: Number, required: true},
          description: { type: String, required: true },
          short_description: { type: String, required: true },
-         image: String   
+         image: {type:String}   
 })
 
 

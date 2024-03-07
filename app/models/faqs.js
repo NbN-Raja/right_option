@@ -2,8 +2,9 @@ const mongoose= require("mongoose")
 
 
 FaqSchema= new mongoose.Schema({
-         title: String,
-         image: String   
+    name: {type:String,required: true},
+    order: {type:Number,required: true},
+    description:{type:String,required: true},
 })
 
 

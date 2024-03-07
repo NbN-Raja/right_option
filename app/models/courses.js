@@ -2,14 +2,14 @@ const mongoose= require("mongoose")
 
 
 CoursesSchema= new mongoose.Schema({
-         name: String,
-         order: String,
-         description: String,
-         short_description: String,
-         image: String   
+         name: {type:String,required: true},
+         order: {type:Number,required: true},
+         description:{type:String,required: true},
+         short_description: {type:String,required: true},
+         image: {type:String},  
 })
 
 
-const Blog= mongoose.model("blogs",CoursesSchema)
+const Courses= mongoose.model("courses",CoursesSchema)
 
-module.exports= Blog
+module.exports= Courses
