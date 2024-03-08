@@ -3,7 +3,10 @@ const mongoose = require("mongoose");
 const HomeSchema = new mongoose.Schema({
     course_title: {
         type: String,
-        required: true
+        required: true,
+        trim: true,
+        minlength: 3,
+        maxlength: 20
     },
     country_title: {
         type: String,

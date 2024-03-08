@@ -36,6 +36,7 @@ require("./app/routes/successstories.routes.js")(app)
 require("./app/routes/inquiry.routes.js")(app)
 require("./app/routes/homepage.routes.js")(app)
 require("./app/routes/contact.routes.js")(app)
+require("./app/routes/seo.routes.js")(app)
 
 
 
