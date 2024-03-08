@@ -22,10 +22,11 @@ const SuccessImage= multer({ storage : memoryStorage })
 const SliderImage= multer({ storage : memoryStorage })
 const PagesImage= multer({ storage : memoryStorage })
 const SocialImage= multer({ storage : memoryStorage })
+const ContactImage= multer({ storage : memoryStorage })
 
 
 
 
 const uploadcover = multer({ storage: memoryStorage });
 
-module.exports = { countryUpload,uploadcover,CoursesUpload,ServiceUpload,BlogImage, BlogBannerImage ,TestimonialImage,PartnerImage,TeamsImage,Faqs,SuccessImage,SliderImage,PagesImage,SocialImage };
+module.exports = { countryUpload,uploadcover,CoursesUpload,ServiceUpload,BlogImage, BlogBannerImage ,TestimonialImage,PartnerImage,TeamsImage,Faqs,SuccessImage,SliderImage,PagesImage,SocialImage,ContactImage };
