@@ -11,26 +11,22 @@ module.exports = (app) => {
     // Get All Countries
     router.get("/teams", async function (req, res, next) {
       try {
-        await Teams.find()
-          .then((data) => {
-            if (data.length === 0) {
-              res.status(404).send({
-                message: `There is no any data available !! please Update`,
-              });
-            } else {
-              res.status(201).json({ message: "Teams Data found", data });
-            }
-          })
-          .catch((err) => {
-            res.status(500).send({
-              message: "Internal server error",
-            });
-          });
-      } catch (error) {
-        console.error("Error saving country:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-      }
-    });
+        const result= await Teams.find()
+          
+             if (result.length === 0) {
+               res.status(404).send({
+                 message: `There is no any data available !! please Update`,
+               });
+             } else {
+               res.status(201).json({success: true, message: "Data found", result });
+             }
+         
+       } catch (error) {
+         console.error("Error saving Data:", error);
+         res.status(500).json({ error: "Internal Server Error" });
+       } 
+      
+      });
   
     // Post All  countries Including Images of countries
     router.post("/teams",TeamsImage.single("image"),async function (req, res, next) {
@@ -40,16 +36,10 @@ module.exports = (app) => {
             .json({ success: false, message: "No image provided." });
         }
         try {
-          const filename =
-            "country-" +
-            new Date().toISOString().replace(/:/g, "-") +
-            path.extname(req.file.originalname);
-          const outputPath = path.join("./app/public/images/teams", filename);
+          const filename = "Teams -" +  new Date().toISOString().replace(/:/g, "-") + '-' + path.basename(req.file.originalname);
+          const outputPath = path.join("./public/images/teams", filename);
   
-          await sharp(req.file.buffer)
-            .resize(500)
-            .jpeg({ quality: 70 })
-            .toFile(outputPath);
+          await sharp(req.file.buffer)  .resize(500)  .jpeg({ quality: 70 })  .toFile(outputPath);
   
           const { name, order, description, short_description } = req.body;
   
@@ -57,21 +47,22 @@ module.exports = (app) => {
             return res.status(400).json({ message: "All fields are required" });
           }
   
-          const teams = new Teams({
+          const imagePath = `/images/partners/${filename}`; 
+          const result = new Teams({
             name,
             order,
             description,
             short_description,
-            image: filename,
+            image: imagePath,
           });
           // Save the new country to the database
-          await teams.save();
-          res.status(200).json({
-            message: "Country saved successfully",
-            imagePath: outputPath, // Save image path
+          await result.save();
+          res.status(200).json({success: true,
+            message: "Data saved successfully",
+            result // Save image path
           });
         } catch (error) {
-          console.error("Error saving country:", error);
+          console.error("Error saving Data:", error);
           return res.status(500).json({ error: "Internal Server Error" });
         }
       }
@@ -102,8 +93,8 @@ module.exports = (app) => {
           return res.status(400).send("No file was uploaded.");
         }
     
-        const filename = "country-" + new Date().toISOString().replace(/:/g, "-") + path.extname(req.file.originalname);
-        const output = path.join("./app/public/images/teams", filename);
+        const filename = "Teams -" +  new Date().toISOString().replace(/:/g, "-") + '-' + path.basename(req.file.originalname);
+        const output = path.join("./public/images/teams", filename);
   
         await sharp(req.file.buffer)
         .resize(500) // Optional: Resize image to a width of 500px (maintaining aspect ratio)
@@ -117,9 +108,9 @@ module.exports = (app) => {
         };
     
         // Update the country document with the new data
-        const updatedTeams = await Teams.findByIdAndUpdate(id, updatedData, { new: true });
+        const result = await Teams.findByIdAndUpdate(id, updatedData, { new: true });
     
-        if (!updatedCountry) {
+        if (!result) {
           return res.status(404).send({
             message: `Teams update Country with id=${id}.`
           });
@@ -127,7 +118,7 @@ module.exports = (app) => {
     
         return res.status(200).json({
           message: "Teams updated successfully.",
-          data: updatedTeams
+          data: result
         });
       } catch (error) {
         console.error("Error updating Country:", error);
@@ -144,11 +135,11 @@ module.exports = (app) => {
     router.delete("/teams/:id", async (req, res, next) => {
       try {
         const id = req.params.id;
-        const deletedCountry = await Teams.findByIdAndDelete(id, {
+        const result = await Teams.findByIdAndDelete(id, {
           useFindAndModify: false,
         });
   
-        if (!deletedCountry) {
+        if (!result) {
           res.status(404).json({ message: "Teams not found" });
         }
   

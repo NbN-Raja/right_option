@@ -2,7 +2,7 @@ const mongoose= require("mongoose")
 
 
 FaqSchema= new mongoose.Schema({
-    name: {type:String,required: true},
+    title: {type:String,required: true},
     order: {type:Number,required: true},
     description:{type:String,required: true},
 })

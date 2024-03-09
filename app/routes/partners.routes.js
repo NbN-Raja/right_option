@@ -2,7 +2,6 @@ module.exports = (app) => {
     var router = require("express").Router();
     const path = require("path");
     const sharp = require("sharp");
-    const fs = require("fs");
   
     const { PartnerImage } = require("../middleware/multer/imageauth");
   
@@ -11,72 +10,61 @@ module.exports = (app) => {
     // Get All Countries
     router.get("/partner", async function (req, res, next) {
       try {
-        await Partner.find()
-          .then((data) => {
-            if (data.length === 0) {
-              res.status(404).send({
-                message: `There is no any data available !! please Update`,
-              });
-            } else {
-              res.status(201).json({ message: "Partner Data found", data });
-            }
-          })
-          .catch((err) => {
-            res.status(500).send({
-              message: "Internal server error",
-            });
-          });
-      } catch (error) {
-        console.error("Error saving country:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-      }
+        const result= await Partner.find()
+          
+             if (result.length === 0) {
+               res.status(404).send({
+                 message: `There is no any data available !! please Update`,
+               });
+             } else {
+               res.status(201).json({ message: "Partners Data found", result });
+             }
+         
+       } catch (error) {
+         console.error("Error saving country:", error);
+         res.status(500).json({ error: "Internal Server Error" });
+       }
     });
   
-    // Post All  countries Including Images of countries
-    router.post("/partner",PartnerImage.single("image"),async function (req, res, next) {
-        if (!req.file) {
-          return res
-            .status(400)
-            .json({ success: false, message: "No image provided." });
-        }
-        try {
-          const filename =
-            "country-" +
-            new Date().toISOString().replace(/:/g, "-") +
-            path.extname(req.file.originalname);
-          const outputPath = path.join("./app/public/images/Partners", filename);
+    
   
-          await sharp(req.file.buffer)
-            .resize(500)
-            .jpeg({ quality: 70 })
-            .toFile(outputPath);
-  
-          const { name, order, description, short_description } = req.body;
-  
-          if (!name || !order || !description || !short_description) {
-            return res.status(400).json({ message: "All fields are required" });
-          }
-  
-          const partner = new Partner({
-            name,
-            order,
-            description,
-            short_description,
-            image: filename,
-          });
-          // Save the new country to the database
-          await partner.save();
-          res.status(200).json({
-            message: "Country saved successfully",
-            imagePath: outputPath, // Save image path
-          });
-        } catch (error) {
-          console.error("Error saving country:", error);
-          return res.status(500).json({ error: "Internal Server Error" });
-        }
+
+  router.post("/partner",PartnerImage.single("image"),async function (req, res, next) {
+    if (!req.file) {
+      return res .status(400) .json({ success: false, message: "No image provided." }); 
+    }
+    try {
+      const filename = "Partner-" + req.file.originalname;
+      const outputPath = path.join("./public/images/partners", filename);
+
+      await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
+
+      const { name, order, description, short_description } = req.body;
+
+      if (!name || !order || !description || !short_description) {
+        return res.status(400).json({ message: "All fields are required" });
       }
-    );
-  
+
+      const imagePath = `/images/partners/${filename}`; 
+
+      const result = new Partner({
+        name,
+        order,
+        description,
+        short_description,
+        image: imagePath,
+      });
+      // Save the new country to the database
+      await result.save();
+       res.status(200).json({ success: true, message: "Data saved successfully",result});
+    } catch (error) {
+      console.error("Error saving Data:", error);
+      return res.status(500).json({ error: true, error: "Internal Server Error",error });
+    }
+  }
+);
+
+
     // Getting Single Country only
     router.get("/partner/:id", async function name(req, res, next) {
       try {

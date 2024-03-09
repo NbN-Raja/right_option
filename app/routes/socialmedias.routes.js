@@ -33,7 +33,7 @@ module.exports = (app) => {
     });
   
     // Post All  countries Including Images of countries
-    router.post("/success",SocialImage.single("image"),async function (req, res, next) {
+    router.post("/social",SocialImage.single("image"),async function (req, res, next) {
         if (!req.file) {
           return res
             .status(400)
@@ -96,7 +96,7 @@ module.exports = (app) => {
     });
   
     // Update Country according to ID
-    router.put("/success/:id", SocialImage.single("image"), async function (req, res, next) {
+    router.put("/social/:id", SocialImage.single("image"), async function (req, res, next) {
       try {
         if (!req.file) {
           return res.status(400).send("No file was uploaded.");

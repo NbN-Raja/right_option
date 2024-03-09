@@ -11,47 +11,40 @@ module.exports = (app) => {
     // Get All Countries
     router.get("/slider", async function (req, res, next) {
       try {
-        await Success.find()
-          .then((data) => {
-            if (data.length === 0) {
-              res.status(404).send({
-                message: `There is no any data available !! please Update`,
-              });
-            } else {
-              res.status(201).json({ message: "Success Data found", data });
-            }
-          })
-          .catch((err) => {
-            res.status(500).send({
-              message: "Internal server error",
-            });
-          });
-      } catch (error) {
-        console.error("Error saving country:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-      }
+        const result= await Slider.find()
+          
+             if (result.length === 0) {
+               res.status(404).send({
+                 message: `There is no any data available !! please Update`,
+               });
+             } else {
+               res.status(201).json({success: true, message: "Data found", result });
+             }
+         
+       } catch (error) {
+         console.error("Error saving Data:", error);
+         res.status(500).json({ error: "Internal Server Error" });
+       } 
     });
   
     // Post All  countries Including Images of countries
-    router.post("/success",SliderImage.single("image"),async function (req, res, next) {
+    router.post("/slider",SliderImage.single("image"),async function (req, res, next) {
         if (!req.file) {
           return res
             .status(400)
             .json({ success: false, message: "No image provided." });
         }
         try {
-          const filename =
-            "country-" +
-            new Date().toISOString().replace(/:/g, "-") +
-            path.extname(req.file.originalname);
-          const outputPath = path.join("./app/public/images/Success", filename);
+          const filename = "Slider -" +  new Date().toISOString().replace(/:/g, "-") + '-' + path.basename(req.file.originalname);
+
+          const outputPath = path.join("./public/images/Success", filename);
   
           await sharp(req.file.buffer)
             .resize(500)
             .jpeg({ quality: 70 })
             .toFile(outputPath);
   
-          const { name, order, description, short_description } = req.body;
+          const { slogan, title, order,description } = req.body;
   
           if (!name || !order || !description || !short_description) {
             return res.status(400).json({ message: "All fields are required" });
@@ -78,7 +71,7 @@ module.exports = (app) => {
     );
   
     // Getting Single Country only
-    router.get("/success/:id", async function name(req, res, next) {
+    router.get("/slider/:id", async function name(req, res, next) {
       try {
         const id = req.params.id;
   
@@ -96,7 +89,7 @@ module.exports = (app) => {
     });
   
     // Update Country according to ID
-    router.put("/success/:id", SliderImage.single("image"), async function (req, res, next) {
+    router.put("/slider/:id", SliderImage.single("image"), async function (req, res, next) {
       try {
         if (!req.file) {
           return res.status(400).send("No file was uploaded.");

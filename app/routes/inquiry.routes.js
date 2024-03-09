@@ -5,30 +5,25 @@ module.exports = (app) => {
     const fs = require("fs");
   
   
-    const Success = require("../models/successstories");
+    const Inquery = require("../models/inquiry");
 
     // Get All Countries
     router.get("/inquiry", async function (req, res, next) {
       try {
-        await Success.find()
-          .then((data) => {
-            if (data.length === 0) {
-              res.status(404).send({
-                message: `There is no any data available !! please Update`,
-              });
-            } else {
-              res.status(201).json({ message: "Success Data found", data });
-            }
-          })
-          .catch((err) => {
-            res.status(500).send({
-              message: "Internal server error",
-            });
-          });
-      } catch (error) {
-        console.error("Error saving country:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-      }
+        const result= await Inquery.find()
+          
+             if (result.length === 0) {
+               res.status(404).send({
+                 message: `There is no any data available !! please Update`,
+               });
+             } else {
+               res.status(201).json({success: true, message: "Data found", result });
+             }
+         
+       } catch (error) {
+         console.error("Error saving Data:", error);
+         res.status(500).json({ error: "Internal Server Error" });
+       } 
     });
   
     // Post All  countries Including Images of countries
@@ -42,20 +37,21 @@ module.exports = (app) => {
             return res.status(400).json({ message: "All fields are required" });
           }
   
-          const result = new Success({
+          const result = new Inquery({
             fullname,
             email,
             phone,
             message,
+            updated_At
           });
           // Save the new country to the database
           await result.save();
           res.status(200).json({
-            message: "Country saved successfully",
-            imagePath: outputPath, // Save image path
+            success: true,
+            message: "Data saved successfully",
           });
         } catch (error) {
-          console.error("Error saving country:", error);
+          console.error("Error saving Data:", error);
           return res.status(500).json({ error: "Internal Server Error" });
         }
       }
@@ -66,15 +62,15 @@ module.exports = (app) => {
       try {
         const id = req.params.id;
   
-        const result = await Country.findById({ _id: id });
+        const result = await Inquery.findById({ _id: id });
   
         if (!result) {
-          res.status(301).json({ message: "Country Not found" });
+          res.status(301).json({ message: "Data Not found" });
         }
   
-        res.status(200).json({ message: "Country Name saved", result });
+        res.status(200).json({ message: "Data Name saved", result });
       } catch (error) {
-        console.error("Error saving country:", error);
+        console.error("Error saving Data:", error);
         res.status(500).json({ error: "Internal Server Error" });
       }
     });
@@ -84,22 +80,22 @@ module.exports = (app) => {
       try {
         
         // Update the country document with the new data
-        const updatedSuccess = await Success.findByIdAndUpdate(id, ...req.body, { new: true });
+        const result = await Inquery.findByIdAndUpdate(id, ...req.body, { new: true });
     
-        if (!updatedCountry) {
+        if (!result) {
           return res.status(404).send({
-            message: `Success update Country with id=${id}.`
+            message: `Success update Data with id=${id}.`
           });
         }
     
         return res.status(200).json({
           message: "Success updated successfully.",
-          data: updatedSuccess
+          data: result
         });
       } catch (error) {
-        console.error("Error updating Country:", error);
+        console.error("Error updating Data:", error);
         return res.status(500).json({
-          message: "Error updating Country",
+          message: "Error updating Data",
           error: error.message
         });
       }
@@ -111,15 +107,15 @@ module.exports = (app) => {
     router.delete("/inquiry/:id", async (req, res, next) => {
       try {
         const id = req.params.id;
-        const deletedCountry = await Success.findByIdAndDelete(id, {
+        const deletedCountry = await Inquery.findByIdAndDelete(id, {
           useFindAndModify: false,
         });
   
         if (!deletedCountry) {
-          res.status(404).json({ message: "Success not found" });
+          res.status(404).json({ message: "Data not found" });
         }
   
-        res.status(200).json({ message: "Success deleted successfully" });
+        res.status(200).json({ message: "Data deleted successfully" });
       } catch (error) {
         console.error("Error deleting country:", error);
         res

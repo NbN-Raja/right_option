@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const PartnerSchema = new mongoose.Schema({
+const InquerySchema = new mongoose.Schema({
     fullname: {
         type: String,
         required: true
@@ -8,13 +8,7 @@ const PartnerSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true,
-        validate: {
-            validator: function(v) {
-                return /\S+@\S+\.\S+/.test(v);
-            },
-            message: props => `${props.value} is not a valid email address!`
-        }
+       
     },
     phone: {
         type: String,
@@ -36,6 +30,6 @@ const PartnerSchema = new mongoose.Schema({
     }
 });
 
-const Partner = mongoose.model("Partner", PartnerSchema);
+const Inquery = mongoose.model("inquiry", InquerySchema);
 
-module.exports = Partner;
+module.exports = Inquery;
