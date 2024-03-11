@@ -8,6 +8,6 @@ const PartnerSchema = new mongoose.Schema({
     image: { type: String, required: true }   
 });
 
-const Partner = mongoose.model("partner", PartnerSchema);
+const Partner = mongoose.model("partner_uni", PartnerSchema);
 
 module.exports = Partner;

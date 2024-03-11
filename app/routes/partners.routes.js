@@ -7,7 +7,9 @@ module.exports = (app) => {
 
   const Partner = require("../models/partners");
 
-  // Get All Countries
+
+
+  // Get All Countries Routes
   router.get("/partner", async (req, res) => {
     try {
       const result = await Partner.find();
@@ -26,7 +28,9 @@ module.exports = (app) => {
     }
   });
 
-  // Post All  countries Including Images of countries
+
+
+  // Post All  Countries Including Images Of Countries
   router.post("/partner", PartnerImage.single("image"), async function (req, res, next) {
     if (!req.file) {
       return res.status(400).json({ success: false, message: "No image provided." });
@@ -74,7 +78,7 @@ module.exports = (app) => {
         return res.status(301).json({ success: false, message: "Data Not found" });
       }
 
-      res.status(200).json({ success: true, message: "Data  saved", data: result });
+      res.status(200).json({ success: true, message: "Data saved", data: result });
     } catch (error) {
       console.error("Error saving Data:", error);
       return res.status(500).json({ error: "Internal Server Error" });
@@ -121,7 +125,7 @@ module.exports = (app) => {
   }
   );
 
-  //   delete countries
+  // Delete Countries Routes
   router.delete("/partner/:id", async (req, res, next) => {
     try {
       const id = req.params.id;

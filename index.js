@@ -1,14 +1,16 @@
-const  express = require('express')
+require("dotenv").config();
+
+const express = require('express')
 const app = express()
 const mongoose= require("mongoose")
-const port = 4000;
+const port = process.env.PORT
 const path= require("path")
 const cors= require("cors")
 const bcrypt= require("bcrypt")
 
 app.use(cors())
 app.use(express.json()); 
-app.use(express.urlencoded({ extended: true })); // Middleware to parse URL-encoded request body
+app.use(express.urlencoded({ extended: true })); 
 // app.use('/public', express.static('public'));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -16,9 +18,6 @@ app.get('/', (req, res) => res.send('Hello World!'))
 
 
 // database connection here 
-
-
-
 const Auth = require("./app/models/auth.js")
 
 // database connection
@@ -34,17 +33,18 @@ const seedSuperAdmin = async () => {
 
     if (!superAdminUser) {
       // If not, create the super admin user
-      const hashedPassword = await bcrypt.hash("password", 10);
+      const hashedPassword = await bcrypt.hash(process.env.SUPER_ADMIN_PASS, 10);
 
       // Replace 'superadminpassword' with the desired password
       const newSuperAdminUser = new Auth({
-        username: 'superadmin',
+        username: process.env.USERNAME,
         password: hashedPassword,
-        role: 'superadmin',
-        email: "info@paradiseit.com.np"
+        role: process.env.ROLE,
+        email: process.env.EMAIL
       });
 
       await newSuperAdminUser.save();
+
       console.log('Super Admin user created successfully');
     } else {
       console.log('Super Admin user already exists');
@@ -58,7 +58,6 @@ const seedSuperAdmin = async () => {
 
 // Run the script
 seedSuperAdmin();
-
 
 
 require("./app/routes/countries.routes.js")(app)
