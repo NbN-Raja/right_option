@@ -15,17 +15,19 @@ module.exports = (app) => {
     }
   
     try {
+      const filename = "Contact-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
 
-      const filename ="Contact -" +new Date().toISOString().replace(/:/g, "-") + path.extname(req.file.originalname);
-      const outputPath = path.join("./app/public/images/contact", filename);
+      const outputPath = path.join("./public/images/contact", filename);
       await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
 
+
+      const imagePath= `/images/contact/${filename}`;
      const result= new Contact({
       ...req.body,
-      banner_image: filename
+      banner_image: imagePath
      })  
      await result.save();
-     res.status(200).json({ message: "Country saved successfully", imagePath: outputPath,  });
+     res.status(200).json({ message: " saved successfully", data: result });
     } catch (error) {
       console.error(error);
       res.status(401).json({success: false, message:"error occured at",error})
@@ -56,7 +58,9 @@ module.exports = (app) => {
       return res.status(400).send("No file was uploaded.");
     }
 
-    const filename = "country-" + new Date().toISOString().replace(/:/g, "-") + path.extname(req.file.originalname);
+    const filename = "Contact-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+
+    
     const output = path.join("./app/public/images/contact", filename);
 
     await sharp(req.file.buffer)
@@ -64,10 +68,12 @@ module.exports = (app) => {
     .jpeg({ quality: 70 })  // Convert to JPEG with 70% quality
     .toFile(output);
 
+    const imagePath= `/images/contact/${filename}`;
+
     const id = req.params.id;
     const updatedData = {
       ...req.body,
-      image: filename // Set the image field to the new filename
+      image: imagePath // Set the image field to the new filename
     };
 
     // Update the country document with the new data
@@ -75,7 +81,7 @@ module.exports = (app) => {
 
     if (!result) {
       return res.status(404).send({
-        message: `Success update Country with id=${id}.`
+        message: `Success update Contact with id=${id}.`
       });
     }
 

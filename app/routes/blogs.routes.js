@@ -21,14 +21,12 @@ module.exports = (app) => {
       const blogs = await Blog.find({});
 
       if (blogs.length === 0) {
-        res.status(301).json({ message: "No data in database! Add Data" });
+       return res.status(301).json({ message: "No data in database! Please Add Data" });
       }
-      res
-        .status(201)
-        .json({ message: "Getting All data from database", blogs });
+     return res .status(201) .json({ message: "Getting All data from database",data:blogs });
     } catch (error) {
       console.error();
-      res.status(500).json({ error: "Error Occured", error });
+      return res.status(500).json({ error: "Error Occured", error });
     }
   });
 
@@ -85,7 +83,7 @@ module.exports = (app) => {
 
       // Save the new blog to the database
       await result.save();
-      res.status(200).json({ message: "Blog saved successfully",result });
+      res.status(200).json({ message: "Blog saved successfully",data:result });
     } catch (error) {
       console.error("Error saving blog:", error);
       return res.status(500).json({ error: "Internal Server Error" });
@@ -105,7 +103,7 @@ module.exports = (app) => {
       if (!result) {
         return res.status(301).json({ message: "No Blogs found related to this id" });
       }
-      return res.status(200).json({ message: "Data Found", result });
+      return res.status(200).json({ message: "Data Found", data: result });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: "Error Occurred", error });
@@ -152,18 +150,18 @@ module.exports = (app) => {
 
       if (!result) {
         return res.status(404).send({
-          message: `Cannot update Country with id=${id}.`
+          message: `Cannot Fount Data with id=${id}.`
         });
       }
 
       return res.status(200).json({
-        message: "Country updated successfully.",
-        data: updatedCountry
+        message: "Data updated successfully.",
+        data: result
       });
     } catch (error) {
-      console.error("Error updating Country:", error);
+      console.error("Error updating Data:", error);
       return res.status(500).json({
-        message: "Error updating Country",
+        message: "Error updating Data",
         error: error.message
       });
     }

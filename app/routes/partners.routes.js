@@ -1,40 +1,38 @@
 module.exports = (app) => {
-    var router = require("express").Router();
-    const path = require("path");
-    const sharp = require("sharp");
-  
-    const { PartnerImage } = require("../middleware/multer/imageauth");
-  
-    const Partner = require("../models/partners");
-  
-    // Get All Countries
-    router.get("/partner", async function (req, res, next) {
-      try {
-        const result= await Partner.find()
-          
-             if (result.length === 0) {
-               res.status(404).send({
-                 message: `There is no any data available !! please Update`,
-               });
-             } else {
-               res.status(201).json({ message: "Partners Data found", result });
-             }
-         
-       } catch (error) {
-         console.error("Error saving country:", error);
-         res.status(500).json({ error: "Internal Server Error" });
-       }
-    });
-  
-    
-  
+  var router = require("express").Router();
+  const path = require("path");
+  const sharp = require("sharp");
 
-  router.post("/partner",PartnerImage.single("image"),async function (req, res, next) {
+  const { PartnerImage } = require("../middleware/multer/imageauth");
+
+  const Partner = require("../models/partners");
+
+  // Get All Countries
+  router.get("/partner", async (req, res) => {
+    try {
+      const result = await Partner.find();
+      if (result.length === 0) {
+        return res.status(404).send({
+          message: `There is no any data available !! please Update`,
+        });
+      }
+      res.status(200).json({ success: true, statusCode: 200, message: " Data found", data:result });
+    } catch (err) {
+      console.error("Error retrieving countries:", err);
+      res.status(500).send({
+        success: false,
+        message: "Internal server error",
+      });
+    }
+  });
+
+  // Post All  countries Including Images of countries
+  router.post("/partner", PartnerImage.single("image"), async function (req, res, next) {
     if (!req.file) {
-      return res .status(400) .json({ success: false, message: "No image provided." }); 
+      return res.status(400).json({ success: false, message: "No image provided." });
     }
     try {
-      const filename = "Partner-" + req.file.originalname;
+      const filename = "Partner-" + new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
       const outputPath = path.join("./public/images/partners", filename);
 
       await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
@@ -46,7 +44,6 @@ module.exports = (app) => {
       }
 
       const imagePath = `/images/partners/${filename}`; 
-
       const result = new Partner({
         name,
         order,
@@ -56,99 +53,90 @@ module.exports = (app) => {
       });
       // Save the new country to the database
       await result.save();
-       res.status(200).json({ success: true, message: "Data saved successfully",result});
+      res.status(200).json({
+        success: true, message: "Data saved successfully", data: result 
+      });
     } catch (error) {
       console.error("Error saving Data:", error);
-      return res.status(500).json({ error: true, error: "Internal Server Error",error });
+      return res.status(500).json({ error: "Internal Server Error", error });
     }
   }
-);
+  );
 
+  // Getting Single Country only
+  router.get("/partner/:id", async function name(req, res, next) {
+    try {
+      const id = req.params.id;
 
-    // Getting Single Country only
-    router.get("/partner/:id", async function name(req, res, next) {
-      try {
-        const id = req.params.id;
-  
-        const result = await Country.findById({ _id: id });
-  
-        if (!result) {
-          res.status(301).json({ message: "Country Not found" });
-        }
-  
-        res.status(200).json({ message: "Country Name saved", result });
-      } catch (error) {
-        console.error("Error saving country:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+      const result = await Partner.findById({ _id: id });
+
+      if (!result) {
+        return res.status(301).json({ success: false, message: "Data Not found" });
       }
-    });
-  
-    // Update Country according to ID
-    router.put("/partner/:id", PartnerImage.single("image"), async function (req, res, next) {
-      try {
-        if (!req.file) {
-          return res.status(400).send("No file was uploaded.");
-        }
-    
-        const filename = "country-" + new Date().toISOString().replace(/:/g, "-") + path.extname(req.file.originalname);
-        const output = path.join("./app/public/images/Partners", filename);
-  
-        await sharp(req.file.buffer)
-        .resize(500) // Optional: Resize image to a width of 500px (maintaining aspect ratio)
-        .jpeg({ quality: 70 })  // Convert to JPEG with 70% quality
-        .toFile(output);
-    
-        const id = req.params.id;
-        const updatedData = {
-          ...req.body,
-          image: filename // Set the image field to the new filename
-        };
-    
-        // Update the country document with the new data
-        const updatedPartner = await Partner.findByIdAndUpdate(id, updatedData, { new: true });
-    
-        if (!updatedCountry) {
-          return res.status(404).send({
-            message: `Partner update Country with id=${id}.`
-          });
-        }
-    
-        return res.status(200).json({
-          message: "Partner updated successfully.",
-          data: updatedPartner
-        });
-      } catch (error) {
-        console.error("Error updating Country:", error);
-        return res.status(500).json({
-          message: "Error updating Country",
-          error: error.message
-        });
+
+      res.status(200).json({ success: true, message: "Data  saved", data: result });
+    } catch (error) {
+      console.error("Error saving Data:", error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+
+  // Update Country according to ID
+  router.put("/partner/:id", PartnerImage.single("image"), async function (req, res, next) {
+
+    try {
+      if (!req.file) {
+        return res.status(400).send("No file was uploaded.");
       }
-    });
-    
-  
-    //   delete countries
-  
-    router.delete("/partner/:id", async (req, res, next) => {
-      try {
-        const id = req.params.id;
-        const deletedCountry = await Partner.findByIdAndDelete(id, {
-          useFindAndModify: false,
-        });
-  
-        if (!deletedCountry) {
-          res.status(404).json({ message: "Partner not found" });
-        }
-  
-        res.status(200).json({ message: "Partner deleted successfully" });
-      } catch (error) {
-        console.error("Error deleting country:", error);
-        res
-          .status(500)
-          .json({ message: "Error deleting country", error: error.message });
+
+      const filename = "Partner-" + new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+      const outputPath = path.join("./public/images/partners", filename);
+
+      await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
+
+      const imagePath = `/images/partners/${filename}`; 
+
+      const id = req.params.id;
+      const updatedData = {
+        ...req.body,
+        image: imagePath,
+      };
+
+      // Update the country document with the new data
+      const result = await Partner.findByIdAndUpdate(id, updatedData, { new: true });
+
+      if (!result) {
+        return res.status(404).send({ message: `Cannot update Partners with id=${id}.`, });
       }
-    });
-  
-    app.use("/api", router);
-  };
-  
+
+      return res.status(200).json({
+        message: "Data  updated successfully.", data: result,
+      });
+    } catch (error) {
+      console.error("Error updating Data:", error);
+      return res.status(500).json({
+        success: true, message: "Error updating Data", error: error.message,
+      });
+    }
+  }
+  );
+
+  //   delete countries
+  router.delete("/partner/:id", async (req, res, next) => {
+    try {
+      const id = req.params.id;
+      const result = await Partner.findByIdAndDelete(id, { useFindAndModify: false });
+
+      if (!result) {
+        return res.status(404).json({ message: "Data not found" });
+      }
+
+      res.status(200).json({ message: "Data deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting Data:", error);
+      return res.status(500).json({ message: "Error deleting Data", error: error.message });
+    }
+  });
+
+  app.use("/api", router);
+};

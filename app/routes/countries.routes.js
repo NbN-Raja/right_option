@@ -7,17 +7,16 @@ module.exports = (app) => {
 
   const Country = require("../models/countries");
 
-
   // Get All Countries
   router.get("/countries", async (req, res) => {
     try {
-      const countries = await Country.find();
-      if (countries.length === 0) {
+      const result = await Country.find();
+      if (result.length === 0) {
         return res.status(404).send({
           message: `There is no any data available !! please Update`,
         });
       }
-      res.status(200).json({ success: true, statusCode: 200, message: "Countries Data found", data: countries });
+      res.status(200).json({ success: true, statusCode: 200, message: " Data found", data:result });
     } catch (err) {
       console.error("Error retrieving countries:", err);
       res.status(500).send({
@@ -26,7 +25,6 @@ module.exports = (app) => {
       });
     }
   });
-
 
   // Post All  countries Including Images of countries
   router.post("/countries", countryUpload.single("image"), async function (req, res, next) {
@@ -45,7 +43,7 @@ module.exports = (app) => {
         return res.status(400).json({ message: "All fields are required" });
       }
 
-      const imagePath = `/images/countries/${filename}`; // Construct the image path
+      const imagePath = `/images/countries/${filename}`; 
       const newCountry = new Country({
         name,
         order,
@@ -56,7 +54,7 @@ module.exports = (app) => {
       // Save the new country to the database
       await newCountry.save();
       res.status(200).json({
-        success: true, message: "Country saved successfully", imagePath: imagePath, // Save image path
+        success: true, message: "Country saved successfully", imagePath: imagePath, 
       });
     } catch (error) {
       console.error("Error saving country:", error);
@@ -96,12 +94,12 @@ module.exports = (app) => {
 
       await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
 
-      const imagePath = `/images/countries/${filename}`; // Construct the image path
+      const imagePath = `/images/countries/${filename}`; 
 
       const id = req.params.id;
       const updatedData = {
         ...req.body,
-        image: imagePath, // Set the image field to the new filename
+        image: imagePath,
       };
 
       // Update the country document with the new data
@@ -124,7 +122,6 @@ module.exports = (app) => {
   );
 
   //   delete countries
-
   router.delete("/countries/:id", async (req, res, next) => {
     try {
       const id = req.params.id;

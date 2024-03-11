@@ -17,7 +17,7 @@ module.exports = (app) => {
                  message: `There is no any data available !! please Update`,
                });
              } else {
-               res.status(201).json({success: true, message: "Data found", result });
+               res.status(201).json({success: true, message: "Data found", data:result });
              }
          
        } catch (error) {
@@ -57,8 +57,46 @@ module.exports = (app) => {
       }
     );
   
-    // Getting Single Country only
-    router.get("/inquiry/:id", async function name(req, res, next) {
+   
+  
+    //   delete countries
+  
+    router.delete("/inquiry/:id", async (req, res, next) => {
+      try {
+        const id = req.params.id;
+        const result = await Inquery.findByIdAndDelete(id, {
+          useFindAndModify: false,
+        });
+  
+        if (!result) {
+         return res.status(404).json({ message: "Data not found" });
+        }
+  
+       return res.status(200).json({ message: "Data deleted successfully" });
+      } catch (error) {
+        console.error("Error deleting country:", error);
+        return res
+          .status(500)
+          .json({ message: "Error deleting country", error: error.message });
+      }
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // UnuseFul Codes
+
+     // Getting Single Country only
+     router.get("/inquiry/:id", async function name(req, res, next) {
       try {
         const id = req.params.id;
   
@@ -101,28 +139,6 @@ module.exports = (app) => {
       }
     });
     
-  
-    //   delete countries
-  
-    router.delete("/inquiry/:id", async (req, res, next) => {
-      try {
-        const id = req.params.id;
-        const deletedCountry = await Inquery.findByIdAndDelete(id, {
-          useFindAndModify: false,
-        });
-  
-        if (!deletedCountry) {
-          res.status(404).json({ message: "Data not found" });
-        }
-  
-        res.status(200).json({ message: "Data deleted successfully" });
-      } catch (error) {
-        console.error("Error deleting country:", error);
-        res
-          .status(500)
-          .json({ message: "Error deleting country", error: error.message });
-      }
-    });
   
     app.use("/api", router);
   };

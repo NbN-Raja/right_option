@@ -13,12 +13,7 @@ const InquerySchema = new mongoose.Schema({
     phone: {
         type: String,
         required: true,
-        validate: {
-            validator: function(v) {
-                return /^[0-9]{10}$/.test(v);
-            },
-            message: props => `${props.value} is not a valid phone number!`
-        }
+        
     },
     message: {
         type: String,

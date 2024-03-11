@@ -30,7 +30,7 @@ module.exports=(app)=>{
               const [logoFilename, footerFilename, iconFilename] = ["logo", "footer", "icon"].map(prefix => `${prefix}-${new Date().toISOString().replace(/:/g, "-")}${path.extname(req.files[prefix][0].originalname)}`);
 
             
-              const [logoFileOutput, footerFileOutput, iconFileOutput] =  ["logo", "footer", "icon"].map(prefix => path.join("./app/public/images/global", `${prefix}-${new Date().toISOString().replace(/:/g, "-")}${path.extname(req.files[prefix][0].originalname)}`));
+              const [logoFileOutput, footerFileOutput, iconFileOutput] =  ["logo", "footer", "icon"].map(prefix => path.join("./public/images/global", `${prefix}-${new Date().toISOString().replace(/:/g, "-")}${path.extname(req.files[prefix][0].originalname)}`));
      
               // Resize and save the uploaded images
               await Promise.all([
@@ -40,17 +40,21 @@ module.exports=(app)=>{
               ]);
       
               // Create a new Global object with the uploaded file details and additional data from req.body
+
+              logoPath=`/images/global/${logoFilename}`;
+              footerPath=`/images/global/${footerFilename}`;
+              iconPath=`/images/global/${iconFilename}`;
               const result = new Global({
                   ...req.body,
-                  logo: logoFilename,
-                  footer: footerFilename,
-                  icon: iconFilename
+                  logo: logoPath,
+                  footer: footerPath,
+                  icon: iconPath
               });
       
               // Save the Global object to the database
               await result.save();
       
-              res.status(200).json({ message: "Global data saved successfully" });
+              res.status(200).json({ message: "Global data saved successfully",data:result });
           } catch (error) {
               console.error(error);
               res.status(500).json({ success: false, message: "An error occurred", error });
@@ -99,6 +103,9 @@ module.exports=(app)=>{
     }
 
   })
+
+
+
   router.put("/global/:id",imageUpload.fields(imageFields), async (req, res) => {
     if (!req.files) {
       return res.status(400).send("No file was uploaded.");
@@ -109,7 +116,7 @@ module.exports=(app)=>{
     const [logoFilename, footerFilename, iconFilename] = ["logo", "footer", "icon"].map(prefix => `${prefix}-${new Date().toISOString().replace(/:/g, "-")}${path.extname(req.files[prefix][0].originalname)}`);
 
   
-    const [logoFileOutput, footerFileOutput, iconFileOutput] =  ["logo", "footer", "icon"].map(prefix => path.join("./app/public/images/global", `${prefix}-${new Date().toISOString().replace(/:/g, "-")}${path.extname(req.files[prefix][0].originalname)}`));
+    const [logoFileOutput, footerFileOutput, iconFileOutput] =  ["logo", "footer", "icon"].map(prefix => path.join("./public/images/global", `${prefix}-${new Date().toISOString().replace(/:/g, "-")}${path.extname(req.files[prefix][0].originalname)}`));
 
     // Resize and save the uploaded images
     await Promise.all([
@@ -119,11 +126,16 @@ module.exports=(app)=>{
     ]);
 
     const id = req.params.id;
+
+    logoPath=`/images/global/${logoFilename}`;
+    footerPath=`/images/global/${footerFilename}`;
+    iconPath=`/images/global/${iconFilename}`;
+
     const updatedData = {
         ...req.body,
-        logo: logoFilename,
-        footer: footerFilename,
-        icon: iconFilename
+        logo: logoPath,
+        footer: footerPath,
+        icon: iconPath
     };
 
     // Update the country document with the new data

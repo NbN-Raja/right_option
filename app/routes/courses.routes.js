@@ -11,15 +11,15 @@ module.exports = (app) => {
   // Get All Countries
   router.get("/courses", async (req, res) => {
     try {
-      const countries = await Courses.find();
-      if (countries.length === 0) {
+      const result = await Courses.find();
+      if (result.length === 0) {
         return res.status(404).send({
           message: `There is no any data available !! please Update`,
         });
       }
-      res.status(200).json({ success: true, statusCode: 200, message: "Countries Data found", data: countries });
+      res.status(200).json({ success: true, message:"Data found", data: result });
     } catch (err) {
-      console.error("Error retrieving countries:", err);
+      console.error("Error retrieving Data:", err);
       res.status(500).send({
         success: false,
         message: "Internal server error",
@@ -34,7 +34,7 @@ module.exports = (app) => {
       return res.status(400).json({ success: false, message: "No image provided." });
     }
     try {
-      const filename = "Courses-" + req.file.originalname;
+      const filename = "Courses-"+ req.file.originalname;
       const outputPath = path.join("./public/images/courses", filename);
 
       await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
@@ -56,7 +56,7 @@ module.exports = (app) => {
       // Save the new Courses to the database
       await result.save();
       res.status(200).json({
-        success: true, message: "Courses saved successfully", imagePath: imagePath, // Save image path
+        success: true, message: "Data saved successfully", data: result // Save image path
       });
     } catch (error) {
       console.error("Error saving Courses:", error);
@@ -76,12 +76,14 @@ module.exports = (app) => {
         return res.status(301).json({ success: false, message: "Courses  Not found" });
       }
 
-      res.status(200).json({ success: true, message: "Courses Name saved", result });
+      res.status(200).json({ success: true, message: "Courses Name saved", data:result });
     } catch (error) {
       console.error("Error saving Courses:", error);
       return res.status(500).json({ error: "Internal Server Error" });
     }
   });
+
+
 
   // Update Courses according to ID
   router.put("/courses/:id", CoursesUpload.single("image"), async function (req, res, next) {
@@ -111,7 +113,7 @@ module.exports = (app) => {
         return res.status(404).send({ message: `Cannot update Courses with id=${id}.`, });
       }
 
-      return res.status(200).json({
+      return res.status(200).json({ success: true,
         message: "Courses updated successfully.", data: result,
       });
     } catch (error) {

@@ -1,10 +1,7 @@
 module.exports = (app) => {
     var router = require("express").Router();
-    const path = require("path");
-    const sharp = require("sharp");
-    const fs = require("fs");
+
   
-    const { Faqs } = require("../middleware/multer/imageauth");
   
     const Faq = require("../models/faqs");
   
@@ -48,10 +45,11 @@ module.exports = (app) => {
           await result.save();
           res.status(200).json({
             sucess: true,
-            message: "Data  saved successfully",
+            message: "Data saved successfully",
+            data: result
           });
         } catch (error) {
-          console.error("Error saving country:", error);
+          console.error("Error saving Data:", error);
           return res.status(500).json({ error: "Internal Server Error",error });
         }
       }

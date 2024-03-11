@@ -2,7 +2,6 @@ module.exports = (app) => {
     var router = require("express").Router();
     const path = require("path");
     const sharp = require("sharp");
-    const fs = require("fs");
   
     const { SuccessImage } = require("../middleware/multer/imageauth");
   
@@ -18,7 +17,7 @@ module.exports = (app) => {
                  message: `There is no any data available !! please Update`,
                });
              } else {
-               res.status(201).json({success: true, message: "Data found", result });
+               res.status(201).json({success: true, message: "Data found", data:result });
              }
          
        } catch (error) {
@@ -33,7 +32,7 @@ module.exports = (app) => {
           return res  .status(400)  .json({ success: false, message: "No image provided." });
         }
         try {
-          const filename = "Success -" +  new Date().toISOString().replace(/:/g, "-") + '-' + path.basename(req.file.originalname);
+          const filename = "Success-"+new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
 
           const outputPath = path.join("./public/images/success", filename);
   
@@ -59,10 +58,10 @@ module.exports = (app) => {
           res.status(200).json({
             success:  true,
             message: "Data  saved successfully",
-            result
+            data: result,
           });
         } catch (error) {
-          console.error("Error saving country:", error);
+          console.error("Error saving Data:", error);
           return res.status(500).json({ error: "Internal Server Error",error });
         }
       }
@@ -76,12 +75,12 @@ module.exports = (app) => {
         const result = await Country.findById({ _id: id });
   
         if (!result) {
-          res.status(301).json({ message: "Country Not found" });
+          res.status(301).json({ message: "Data Not found" });
         }
   
-        res.status(200).json({ message: "Country Name saved", result });
+        res.status(200).json({ success: true, message: "Data  saved", result });
       } catch (error) {
-        console.error("Error saving country:", error);
+        console.error("Error saving Data:", error);
         res.status(500).json({ error: "Internal Server Error" });
       }
     });
@@ -93,18 +92,21 @@ module.exports = (app) => {
           return res.status(400).send("No file was uploaded.");
         }
     
-        const filename = "country-" + new Date().toISOString().replace(/:/g, "-") + path.extname(req.file.originalname);
+        const filename = "Success-"+new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
         const output = path.join("./public/images/success", filename);
   
         await sharp(req.file.buffer)
         .resize(500) // Optional: Resize image to a width of 500px (maintaining aspect ratio)
         .jpeg({ quality: 70 })  // Convert to JPEG with 70% quality
         .toFile(output);
+
+
+      const imagePath= `/images/succcess/${filename}`;
     
         const id = req.params.id;
         const updatedData = {
           ...req.body,
-          image: filename // Set the image field to the new filename
+          image: imagePath // Set the image field to the new filename
         };
     
         // Update the country document with the new data
@@ -112,7 +114,7 @@ module.exports = (app) => {
     
         if (!result) {
           return res.status(404).send({
-            message: `Success update Country with id=${id}.`
+            message: `Success update  with id=${id}.`
           });
         }
     
@@ -121,9 +123,9 @@ module.exports = (app) => {
           data: result
         });
       } catch (error) {
-        console.error("Error updating Country:", error);
+        console.error("Error updating Data:", error);
         return res.status(500).json({
-          message: "Error updating Country",
+          message: "Error updating Data",
           error: error.message
         });
       }
@@ -135,9 +137,7 @@ module.exports = (app) => {
     router.delete("/success/:id", async (req, res, next) => {
       try {
         const id = req.params.id;
-        const result = await Success.findByIdAndDelete(id, {
-          useFindAndModify: false,
-        });
+        const result = await Success.findByIdAndDelete(id, { useFindAndModify: false, });
   
         if (!result) {
           res.status(404).json({ message: "Data not found" });
@@ -145,10 +145,10 @@ module.exports = (app) => {
   
         res.status(200).json({ success: true, message: "Data deleted successfully" });
       } catch (error) {
-        console.error("Error deleting country:", error);
+        console.error("Error deleting Data:", error);
         res
           .status(500)
-          .json({ message: "Error deleting country", error: error.message });
+          .json({ message: "Error deleting Data", error: error.message });
       }
     });
   

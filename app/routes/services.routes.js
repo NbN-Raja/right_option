@@ -46,7 +46,7 @@ module.exports = (app) => {
           return res.status(400).json({ message: "All fields are required" });
         }
   
-        const imagePath = `/images/courses/${filename}`; // Construct the image path
+        const imagePath = `/images/services/${filename}`; // Construct the image path
         const result = new Service({
           name,
           order,
@@ -57,7 +57,7 @@ module.exports = (app) => {
         // Save the new Courses to the database
         await result.save();
         res.status(200).json({
-          success: true, message: "Service Data saved successfully", imagePath: imagePath, // Save image path
+          success: true, message: "Service Data saved successfully", data:result // Save image path
         });
       } catch (error) {
         console.error("Error saving Service Data:", error);
@@ -76,7 +76,7 @@ module.exports = (app) => {
             if (!result) {
                 return res.status(301).json({ message: "No Services found related to this id" });
             }
-            return res.status(200).json({ message: "Data Found", result });
+            return res.status(200).json({ message: "Data Found", data:result });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ error: "Error Occurred", error });
@@ -93,12 +93,12 @@ module.exports = (app) => {
         return res.status(400).send("No file was uploaded.");
       }
 
-      const filename = "Courses-" + req.file.originalname;
+      const filename = "Courses-" +  req.file.originalname;
       const outputPath = path.join("./public/images/services", filename);
 
       await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
 
-      const imagePath = `/images/courses/${filename}`; // Construct the image path
+      const imagePath = `/images/services/${filename}`; // Construct the image path
 
       const id = req.params.id;
       const updatedData = {
@@ -114,7 +114,7 @@ module.exports = (app) => {
       }
 
       return res.status(200).json({
-        message: "services updated successfully.", data: result,
+        message: "services updated successfully.", data: result
       });
     } catch (error) {
       console.error("Error updating services:", error);
@@ -125,6 +125,9 @@ module.exports = (app) => {
       });
 
 
+
+
+      // Delete Specific Routes HERE
 
       router.delete("/service/:id", async (req,res)=>{
         try {

@@ -18,11 +18,11 @@ module.exports = (app) => {
                 message: `There is no any data available !! please Update`,
               });
             } else {
-              res.status(201).json({ message: "Testimonial Data found", result });
+              res.status(201).json({ message: "Testimonial Data found", data: result });
             }
         
       } catch (error) {
-        console.error("Error saving country:", error);
+        console.error("Error saving Data:", error);
         res.status(500).json({ error: "Internal Server Error" });
       }
     });
@@ -35,9 +35,8 @@ module.exports = (app) => {
           return res .status(400) .json({ success: false, message: "No image provided." }); 
         }
         try {
-          const filename = "Testimonials-" + req.file.originalname;
+          const filename = "Testimonials-" + new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
           const outputPath = path.join("./public/images/testimonials", filename);
-  
           await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
   
           const { name, order, description, short_description } = req.body;
@@ -57,7 +56,7 @@ module.exports = (app) => {
           });
           // Save the new country to the database
           await testimonial.save();
-           res.status(200).json({ success:true, message: "Country saved successfully",testimonial,   imagePath: imagePath});
+           res.status(200).json({ success:true, message: "Country saved successfully",testimonial});
         } catch (error) {
           console.error("Error saving country:", error);
           return res.status(500).json({ error: true, error: "Internal Server Error" });
@@ -70,13 +69,13 @@ module.exports = (app) => {
       try {
         const id = req.params.id;
   
-        const result = await Country.findById({ _id: id });
+        const result = await Testimonial.findById({ _id: id });
   
         if (!result) {
           res.status(301).json({ message: "Country Not found" });
         }
   
-        res.status(200).json({ message: "Country Name saved", result });
+        res.status(200).json({ message: "Country Name FOUND", data: result });
       } catch (error) {
         console.error("Error saving country:", error);
         res.status(500).json({ error: "Internal Server Error" });
@@ -90,8 +89,8 @@ module.exports = (app) => {
           return res.status(400).send("No file was uploaded.");
         }
     
-        const filename = "Testimonials-" + req.file.originalname;
-          const outputPath = path.join("./public/images/testimonials", filename);
+        const filename = "Testimonials-" + new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+        const outputPath = path.join("./public/images/testimonials", filename);
   
         await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
 
@@ -108,7 +107,7 @@ module.exports = (app) => {
         const result = await Testimonial.findByIdAndUpdate(id, updatedData, { new: true });
     
         if (!result) {
-          return res.status(404).send({  message: `testimonial update  with id=${id}.` });
+          return res.status(404).send({  message: `Error update  with id=${id}.` });
         }
     
         return res.status(200).json({  message: "testimonial updated successfully.",  data: result
@@ -134,7 +133,7 @@ module.exports = (app) => {
           res.status(404).json({ message: "testimonial not found" });
         }
   
-        res.status(200).json({ message: "testimonial deleted successfully" });
+       return res.status(200).json({ message: "testimonial deleted successfully" });
       } catch (error) {
         console.error("Error deleting :", error);
         res

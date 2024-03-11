@@ -12,13 +12,6 @@ const SocialMediasSchema = new mongoose.Schema({
     link: {
         type: String,
         required: true,
-        validate: {
-            validator: function(v) {
-                // Regular expression to check URL format
-                return /^(https?:\/\/)?([\w\d\-]+\.)+[\w\d]{2,}(\/[\w\d\-]+)*\/?$/.test(v);
-            },
-            message: props => `${props.value} is not a valid URL!`
-        }
     },
     order: {
         type: Number,

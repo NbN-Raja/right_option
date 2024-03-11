@@ -18,7 +18,7 @@ module.exports = (app) => {
                  message: `There is no any data available !! please Update`,
                });
              } else {
-               res.status(201).json({success: true, message: "Data found", result });
+               res.status(201).json({success: true, message: "Data found", data:result });
              }
          
        } catch (error) {
@@ -36,22 +36,22 @@ module.exports = (app) => {
             .json({ success: false, message: "No image provided." });
         }
         try {
-          const filename = "Teams -" +  new Date().toISOString().replace(/:/g, "-") + '-' + path.basename(req.file.originalname);
+          const filename = "Teams-"+new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+
           const outputPath = path.join("./public/images/teams", filename);
   
           await sharp(req.file.buffer)  .resize(500)  .jpeg({ quality: 70 })  .toFile(outputPath);
   
-          const { name, order, description, short_description } = req.body;
+          const { name, order, short_description } = req.body;
   
-          if (!name || !order || !description || !short_description) {
+          if (!name || !order  || !short_description) {
             return res.status(400).json({ message: "All fields are required" });
           }
   
-          const imagePath = `/images/partners/${filename}`; 
+          const imagePath = `/images/teams/${filename}`; 
           const result = new Teams({
             name,
             order,
-            description,
             short_description,
             image: imagePath,
           });
@@ -93,18 +93,16 @@ module.exports = (app) => {
           return res.status(400).send("No file was uploaded.");
         }
     
-        const filename = "Teams -" +  new Date().toISOString().replace(/:/g, "-") + '-' + path.basename(req.file.originalname);
+        const filename = "Teams-"+new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
         const output = path.join("./public/images/teams", filename);
   
-        await sharp(req.file.buffer)
-        .resize(500) // Optional: Resize image to a width of 500px (maintaining aspect ratio)
-        .jpeg({ quality: 70 })  // Convert to JPEG with 70% quality
-        .toFile(output);
+        await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(output);
     
+        const imagePath= `/images/teams/${filename}`;
         const id = req.params.id;
         const updatedData = {
           ...req.body,
-          image: filename // Set the image field to the new filename
+          image: imagePath // Set the image field to the new filename
         };
     
         // Update the country document with the new data

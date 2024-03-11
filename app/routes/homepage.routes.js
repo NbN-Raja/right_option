@@ -16,7 +16,7 @@ module.exports = (app) => {
         ...req.body,
       });
       await result.save();
-      res.status(200).json({ success: true, message: "Data saved", result });
+      res.status(200).json({ success: true, message: "Data saved", data:result });
     } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, errormsg: error, error });
@@ -31,7 +31,7 @@ module.exports = (app) => {
         res.status(301).json({ success: false, message: "No data found" });
       }
 
-      res.status(200).json({ success: true, mesage: "data fond", result });
+      res.status(200).json({ success: true, mesage: "data fond", data:result });
     } catch (error) {
       console.error(error);
       res.status(501).json({ success: false, errorMsg: error, error });
@@ -62,7 +62,7 @@ module.exports = (app) => {
         });
       }
 
-      res.status(200).json({ success: true, message: "Updated Data", result });
+      res.status(200).json({ success: true, message: "Updated Data", data:result });
     } catch (error) {
       console.error(error);
       res.status(501).json({ success: false, errorMsg: error });

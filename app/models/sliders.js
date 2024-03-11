@@ -3,15 +3,18 @@ const mongoose = require("mongoose");
 const SlidersSchema = new mongoose.Schema({
     slogan: {
         type: String,
-        required: true
+        required: true,
+        minlength:1
     },
     title: {
         type: String,
-        required: true
+        required: true,
+        minlength:1
     },
     description: {
         type:String,
-        require:true
+        require:true,
+        minlength:1
     },
   
     image: {
@@ -21,13 +24,7 @@ const SlidersSchema = new mongoose.Schema({
     order: {
         type: Number,
         required: true,
-        // Validate that order is a positive integer
-        validate: {
-            validator: function(v) {
-                return Number.isInteger(v) && v > 0;
-            },
-            message: props => `${props.value} is not a valid order value!`
-        }
+        
     }
 });
 

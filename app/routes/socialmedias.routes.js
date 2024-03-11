@@ -9,27 +9,22 @@ module.exports = (app) => {
     const Social = require("../models/socialmedias");
 
     // Get All Countries
-    router.get("/slider", async function (req, res, next) {
+    router.get("/social", async function (req, res, next) {
       try {
-        await Success.find()
-          .then((data) => {
-            if (data.length === 0) {
-              res.status(404).send({
-                message: `There is no any data available !! please Update`,
-              });
-            } else {
-              res.status(201).json({ message: "Success Data found", data });
-            }
-          })
-          .catch((err) => {
-            res.status(500).send({
-              message: "Internal server error",
-            });
-          });
-      } catch (error) {
-        console.error("Error saving country:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-      }
+        const result= await Social.find()
+          
+             if (result.length === 0) {
+               res.status(404).send({
+                 message: `There is no any data available !! please Update`,
+               });
+             } else {
+               res.status(201).json({success: true, message: "Data found", data: result });
+             }
+         
+       } catch (error) {
+         console.error("Error saving Data:", error);
+         res.status(500).json({ error: "Internal Server Error" });
+       } 
     });
   
     // Post All  countries Including Images of countries
@@ -40,58 +35,51 @@ module.exports = (app) => {
             .json({ success: false, message: "No image provided." });
         }
         try {
-          const filename =
-            "country-" +
-            new Date().toISOString().replace(/:/g, "-") +
-            path.extname(req.file.originalname);
-          const outputPath = path.join("./app/public/images/Success", filename);
+          const filename = "Social-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+
+          const outputPath = path.join("./public/images/social", filename);
+
+          await sharp(req.file.buffer) .resize(500) .jpeg({ quality: 70 }) .toFile(outputPath);
+
   
-          await sharp(req.file.buffer)
-            .resize(500)
-            .jpeg({ quality: 70 })
-            .toFile(outputPath);
+          const { title, link, order } = req.body;
   
-          const { name, order, description, short_description } = req.body;
-  
-          if (!name || !order || !description || !short_description) {
+          if (!title || !link || !order) {
             return res.status(400).json({ message: "All fields are required" });
           }
-  
-          const result = new Success({
-            name,
+
+          const imagePath= `/images/social/${filename}`;  
+          const result = new Social({
+            title,
+            link,
             order,
-            description,
-            short_description,
-            image: filename,
+            image: imagePath,
           });
           // Save the new country to the database
           await result.save();
-          res.status(200).json({
-            message: "Country saved successfully",
-            imagePath: outputPath, // Save image path
-          });
+          res.status(200).json({ success: true,  message: "Social saved successfully", data:result  });
         } catch (error) {
-          console.error("Error saving country:", error);
-          return res.status(500).json({ error: "Internal Server Error" });
+          console.error("Error saving Social:", error);
+          return res.status(500).json({ error: true, error: "Internal Server Error" });
         }
       }
     );
   
     // Getting Single Country only
-    router.get("/success/:id", async function name(req, res, next) {
+    router.get("/social/:id", async function name(req, res, next) {
       try {
         const id = req.params.id;
   
-        const result = await Country.findById({ _id: id });
+        const result = await Social.findById({ _id: id });
   
         if (!result) {
-          res.status(301).json({ message: "Country Not found" });
+         return res.status(301).json({ message: "Data Not found" });
         }
   
-        res.status(200).json({ message: "Country Name saved", result });
+         return res.status(200).json({ message: "Data Name saved", result });
       } catch (error) {
-        console.error("Error saving country:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        console.error("Error saving Data:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
       }
     });
   
@@ -102,37 +90,37 @@ module.exports = (app) => {
           return res.status(400).send("No file was uploaded.");
         }
     
-        const filename = "country-" + new Date().toISOString().replace(/:/g, "-") + path.extname(req.file.originalname);
-        const output = path.join("./app/public/images/Success", filename);
-  
-        await sharp(req.file.buffer)
-        .resize(500) // Optional: Resize image to a width of 500px (maintaining aspect ratio)
-        .jpeg({ quality: 70 })  // Convert to JPEG with 70% quality
-        .toFile(output);
+        const filename = "Social-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+
+        const outputPath = path.join("./public/images/social", filename);
+
+        await sharp(req.file.buffer) .resize(500) .jpeg({ quality: 70 }) .toFile(outputPath);
+
+        const imagePath= `/images/social/${filename}`;
     
         const id = req.params.id;
         const updatedData = {
           ...req.body,
-          image: filename // Set the image field to the new filename
+          image: imagePath // Set the image field to the new filename
         };
     
         // Update the country document with the new data
-        const updatedSuccess = await Success.findByIdAndUpdate(id, updatedData, { new: true });
+        const result = await Social.findByIdAndUpdate(id, updatedData, { new: true });
     
-        if (!updatedCountry) {
+        if (!result) {
           return res.status(404).send({
-            message: `Success update Country with id=${id}.`
+            message: `Cannot Get Data  with id=${id}.`
           });
         }
     
         return res.status(200).json({
           message: "Success updated successfully.",
-          data: updatedSuccess
+          data: result
         });
       } catch (error) {
-        console.error("Error updating Country:", error);
+        console.error("Error updating Data:", error);
         return res.status(500).json({
-          message: "Error updating Country",
+          message: "Error updating Data",
           error: error.message
         });
       }
@@ -141,23 +129,23 @@ module.exports = (app) => {
   
     //   delete countries
   
-    router.delete("/success/:id", async (req, res, next) => {
+    router.delete("/social/:id", async (req, res, next) => {
       try {
         const id = req.params.id;
-        const deletedCountry = await Success.findByIdAndDelete(id, {
+        const result = await Social.findByIdAndDelete(id, {
           useFindAndModify: false,
         });
   
-        if (!deletedCountry) {
-          res.status(404).json({ message: "Success not found" });
+        if (!result) {
+          res.status(404).json({ message: "Data not found" });
         }
   
-        res.status(200).json({ message: "Success deleted successfully" });
+        res.status(200).json({success: true, message: "Deleted Data successfully" });
       } catch (error) {
-        console.error("Error deleting country:", error);
+        console.error("Error deleting Data:", error);
         res
           .status(500)
-          .json({ message: "Error deleting country", error: error.message });
+          .json({ message: "Error deleting Data", error: error.message });
       }
     });
   
