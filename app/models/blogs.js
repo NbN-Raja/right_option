@@ -2,10 +2,10 @@ const mongoose= require("mongoose")
 
 
 BlogsSchema= new mongoose.Schema({
-         title: { type: String, required: true },
+         title: { type: String},
          date: { type: Date, default: Date.now },
-         description: { type: String, required: true },
-         short_description: { type: String, required: true },
+         description: { type: String },
+         short_description: { type: String },
          image:{type: String},
          banner_image:{type: String},
          seo_title:{type: String},

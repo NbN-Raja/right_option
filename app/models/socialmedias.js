@@ -7,16 +7,13 @@ const SocialMediasSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        required: true
     },
     link: {
         type: String,
-        required: true,
     },
     order: {
         type: Number,
-        required: true,
-        min: 1 // Assuming order should be a positive number
+      
     }
 });
 

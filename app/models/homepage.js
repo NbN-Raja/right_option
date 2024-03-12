@@ -3,10 +3,7 @@ const mongoose = require("mongoose");
 const HomeSchema = new mongoose.Schema({
     course_title: {
         type: String,
-        required: true,
         trim: true,
-        minlength: 3,
-        maxlength: 20
     },
     country_title: {
         type: String,
@@ -29,8 +26,7 @@ const HomeSchema = new mongoose.Schema({
         required: true
     },
     faq_description: {
-        type: String,
-        required: true
+        type: String, 
     },
     home_seotitle: {
         type: String,
@@ -38,11 +34,11 @@ const HomeSchema = new mongoose.Schema({
     },
     home_seokeyword: {
         type: String,
-        required: true
+        
     },
     home_description: {
         type: String,
-        required: true
+       
     }
 });
 

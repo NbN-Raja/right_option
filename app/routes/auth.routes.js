@@ -2,13 +2,13 @@ module.exports=(app)=>{
 
 
     const jwt = require('jsonwebtoken');
-
     const bcrypt= require("bcrypt")
-
     const Auth= require("../models/auth")
-
     var router = require("express").Router();
 
+
+
+    // Login Routes Are Here !!
     router.post("/login", async (req, res) => {
         try {
             const { email, password } = req.body;

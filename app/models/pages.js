@@ -7,7 +7,6 @@ const PageSchema = new mongoose.Schema({
     },
     order: {
         type: Number,
-        required: true,
         min: 0 // Assuming order should be a positive number
     },
     description: {
@@ -15,7 +14,6 @@ const PageSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        required: true
     }
 });
 

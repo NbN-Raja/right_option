@@ -23,27 +23,21 @@ const ContactSchema = new mongoose.Schema({
     },
     contact: {
         type: String,
-        required: true
     },
     location: {
         type: String,
-        required: true
     },
     seo_title: {
         type: String,
-        required: true
     },
     seo_keyword: {
         type: String,
-        required: true
     },
     seo_description: {
         type: String,
-        required: true
     },
     banner_image: {
         type: String,
-        required: true
     }
 });
 

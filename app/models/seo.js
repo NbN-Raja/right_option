@@ -7,48 +7,36 @@ const SeoSchema = new mongoose.Schema({
     },
     seo_keywords: {
         type: String,
-        required: true
     },
     seo_description: {
-        type: String,
-        required: true,
-       
+        type: String,       
     },
     course_title: {
         type: String,
-        required: true
     },
     course_keywords: {
         type: String,
-        required: true
     },
     course_Description: {
         type: String,
-        required: true
     },
     blog_title: {
         type: String,
-        required: true
     },
     blog_keywords: {
         type: String,
-        required: true
     },
     blog_Description: {
         type: String,
-        required: true
     },
     service_title: {
         type: String,
-        required: true
     },
     service_keywords: {
         type: String,
-        required: true
     },
     service_Description: {
         type: String,
-        required: true
     },
    
 });

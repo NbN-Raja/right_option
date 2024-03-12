@@ -11,7 +11,8 @@ module.exports = (app) => {
     router.post("/contact", ContactImage.single("banner_image"), async (req,res)=>{
 
      // Check the files
-     if (!req.file) {return res .status(400) .json({ success: false, message: "No image provided." });
+     if (!req.file) 
+     {return res .status(400) .json({ success: false, message: "No image provided." });
     }
   
     try {

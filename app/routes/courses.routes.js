@@ -8,10 +8,11 @@ module.exports = (app) => {
   const Courses = require("../models/courses");
   const {isSuperAdmin} = require("../middleware/auth/tokenverify")
 
-  router.use(isSuperAdmin);
+  // router.use(isSuperAdmin);
+  
 
   // Get All Countries
-  router.get("/courses",isSuperAdmin, async (req, res) => {
+  router.get("/courses", async (req, res) => {
     try {
       const result = await Courses.find();
       if (result.length === 0) {

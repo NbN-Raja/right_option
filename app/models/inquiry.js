@@ -3,21 +3,15 @@ const mongoose = require("mongoose");
 const InquerySchema = new mongoose.Schema({
     fullname: {
         type: String,
-        required: true
     },
     email: {
         type: String,
-        required: true,
-       
     },
     phone: {
-        type: String,
-        required: true,
-        
+        type: String,       
     },
     message: {
         type: String,
-        required: true
     },
     updated_At: {
         type: Date,

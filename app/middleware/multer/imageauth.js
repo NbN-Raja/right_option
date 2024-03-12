@@ -4,20 +4,19 @@ const memoryStorage = multer.memoryStorage();
 
 const maxSize = 1024 * 1024; // 1 MB
 
-// File filter function to accept only jpeg, jpg, and png files
 const fileFilter = (req, file, cb) => {
     const allowedMimes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (allowedMimes.includes(file.mimetype)) {
-        cb(null, true); // Accept file
+        cb(null, true); 
     } else {
-        cb(new Error('Invalid file type. Only JPEG, JPG, and PNG files are allowed.'), false); // Reject file
+        cb(new Error('Invalid file type. Only JPEG, JPG, and PNG files are allowed.'), false); 
     }
 };
 
 const uploadConfig = {
     storage: memoryStorage,
-    limits: { fileSize: maxSize }, // Maximum upload size
-    fileFilter: fileFilter // Only accept specified file types
+    limits: { fileSize: maxSize }, 
+    fileFilter: fileFilter 
 };
 
 const countryUpload = multer(uploadConfig);
