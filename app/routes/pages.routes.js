@@ -29,29 +29,18 @@ module.exports = (app) => {
   
     // Post All  countries Including Images of countries
     router.post("/page",PagesImage.single("image"),async function (req, res, next) {
-      if (!req.file) {
-        return res  .status(400)  .json({ success: false, message: "No image provided." });
-         }
       try {
+        let imagePath= null;
 
-        const filename = "Pages-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
-
-
-        const outputPath = path.join("./public/images/pages", filename);
-
-        await sharp(req.file.buffer) .resize(500) .jpeg({ quality: 70 }) .toFile(outputPath);
-
-        const { title, order,description } = req.body;
-
-        if ( !title || !description || !order) {
-          return res.status(400).json({ message: "All fields are required" });
-        }
-
-
-        const imagePath = `/images/pages/${filename}`; 
-
+        if (req.file) {
+          const filename = "Pages-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+          const outputPath = path.join("./public/images/pages", filename);
+          await sharp(req.file.buffer) .resize(500) .jpeg({ quality: 70 }) .toFile(outputPath);
+  
+           imagePath = `/images/pages/${filename}`;  
+                    }
+           const { title, order,description } = req.body;
         const result = new Pages({
-          
           title,
           order,
           description,
@@ -92,16 +81,16 @@ module.exports = (app) => {
     // Update Country according to ID
     router.put("/page/:id", PagesImage.single("image"), async function (req, res, next) {
       try {
-        if (!req.file) {
-          return res.status(400).send("No file was uploaded.");
-        }
-        const filename = "Pages-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+        let imagePath= null;
 
-        const output = path.join("./public/images/pages", filename);
+        if (req.file) {
+          const filename = "Pages-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+          const outputPath = path.join("./public/images/pages", filename);
+          await sharp(req.file.buffer) .resize(500) .jpeg({ quality: 70 }) .toFile(outputPath);
   
-        await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(output);
-  
-        const imagePath= `/images/pages/${filename}`;
+           imagePath = `/images/pages/${filename}`;  
+           
+                    }
         const id = req.params.id;
         const updatedData = {
           ...req.body,

@@ -29,26 +29,24 @@ module.exports = (app) => {
   
     // Post All  countries Including Images of countries
     router.post("/social",SocialImage.single("image"),async function (req, res, next) {
-        if (!req.file) {
-          return res
-            .status(400)
-            .json({ success: false, message: "No image provided." });
-        }
+       
         try {
-          const filename = "Social-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+
+          let imagePath= null;
+          if (req.file) {
+           
+            const filename = "Social-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
 
           const outputPath = path.join("./public/images/social", filename);
 
           await sharp(req.file.buffer) .resize(500) .jpeg({ quality: 70 }) .toFile(outputPath);
 
-  
-          const { title, link, order } = req.body;
-  
-          if (!title || !link || !order) {
-            return res.status(400).json({ message: "All fields are required" });
+
+           imagePath= `/images/social/${filename}`;  
           }
 
-          const imagePath= `/images/social/${filename}`;  
+          const { title, link, order } = req.body;
+
           const result = new Social({
             title,
             link,
@@ -86,17 +84,18 @@ module.exports = (app) => {
     // Update Country according to ID
     router.put("/social/:id", SocialImage.single("image"), async function (req, res, next) {
       try {
-        if (!req.file) {
-          return res.status(400).send("No file was uploaded.");
-        }
-    
-        const filename = "Social-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+        let imagePath= null;
+          if (req.file) {
+           
+            const filename = "Social-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
 
-        const outputPath = path.join("./public/images/social", filename);
+          const outputPath = path.join("./public/images/social", filename);
 
-        await sharp(req.file.buffer) .resize(500) .jpeg({ quality: 70 }) .toFile(outputPath);
+          await sharp(req.file.buffer) .resize(500) .jpeg({ quality: 70 }) .toFile(outputPath);
 
-        const imagePath= `/images/social/${filename}`;
+
+           imagePath= `/images/social/${filename}`;  
+          }
     
         const id = req.params.id;
         const updatedData = {

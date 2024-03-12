@@ -31,22 +31,25 @@ module.exports = (app) => {
 
     // Post Service
     router.post("/service", ServiceUpload.single("image"), async (req, res) => {
-      if (!req.file) {
-        return res.status(400).json({ success: false, message: "No image provided." });
-      }
+    
       try {
-        const filename = "Services-" + req.file.originalname;
-        const outputPath = path.join("./public/images/services", filename);
-  
-        await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
-  
-        const { name, order, description, short_description } = req.body;
-  
-        if (!name || !order || !description || !short_description) {
-          return res.status(400).json({ message: "All fields are required" });
-        }
-  
-        const imagePath = `/images/services/${filename}`; // Construct the image path
+        let imagePath=null;
+
+        if (req.file) {
+          const filename = "Services-" + req.file.originalname;
+          const outputPath = path.join("./public/images/services", filename);
+    
+          await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
+    
+    
+          
+    
+           imagePath = `/images/services/${filename}`;   
+          
+          }
+
+           const { name, order, description, short_description } = req.body;
+
         const result = new Service({
           name,
           order,
@@ -89,16 +92,17 @@ module.exports = (app) => {
     router.put("/service/:id", ServiceUpload.single("image"), async function (req, res, next) {
         
     try {
-      if (!req.file) {
-        return res.status(400).send("No file was uploaded.");
-      }
+      let imagePath=null;
 
-      const filename = "Courses-" +  req.file.originalname;
-      const outputPath = path.join("./public/images/services", filename);
-
-      await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
-
-      const imagePath = `/images/services/${filename}`; // Construct the image path
+        if (req.file) {
+          const filename = "Services-" + req.file.originalname;
+          const outputPath = path.join("./public/images/services", filename);
+    
+          await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
+    
+           imagePath = `/images/services/${filename}`;   
+          
+          }
 
       const id = req.params.id;
       const updatedData = {

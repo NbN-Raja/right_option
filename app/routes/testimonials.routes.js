@@ -31,21 +31,22 @@ module.exports = (app) => {
   
     // Post All  countries Including Images of countries
     router.post("/testimonial",TestimonialImage.single("image"),async function (req, res, next) {
-        if (!req.file) {
-          return res .status(400) .json({ success: false, message: "No image provided." }); 
-        }
+        
         try {
-          const filename = "Testimonials-" + new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
-          const outputPath = path.join("./public/images/testimonials", filename);
-          await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
-  
-          const { name, order, description, short_description } = req.body;
-  
-          if (!name || !order || !description || !short_description) {
-            return res.status(400).json({ message: "All fields are required" });
-          }
+          let imagePath= null;
 
-          const imagePath = `/images/testimonials/${filename}`; // Construct the image path
+          if (req.file) {
+            const filename = "Testimonials-" + new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+            const outputPath = path.join("./public/images/testimonials", filename);
+            await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
+    
+    
+  
+            imagePath = `/images/testimonials/${filename}`; 
+                    }
+
+                    const { name, order, description, short_description } = req.body;
+
   
           const testimonial = new Testimonial({
             name,
@@ -85,16 +86,16 @@ module.exports = (app) => {
     // Update Country according to ID
     router.put("/testimonial/:id", TestimonialImage.single("image"), async function (req, res, next) {
       try {
-        if (!req.file) {
-          return res.status(400).send("No file was uploaded.");
-        }
-    
-        const filename = "Testimonials-" + new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
-        const outputPath = path.join("./public/images/testimonials", filename);
+        let imagePath= null;
+        if (req.file) {
+          const filename = "Testimonials-" + new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+          const outputPath = path.join("./public/images/testimonials", filename);
+          await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
   
-        await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
+  
 
-        const imagePath = `/images/testimonials/${filename}`; 
+          imagePath = `/images/testimonials/${filename}`; 
+                  }
 
     
         const id = req.params.id;

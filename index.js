@@ -7,9 +7,14 @@ const port = process.env.PORT
 const path= require("path")
 const cors= require("cors")
 const bcrypt= require("bcrypt")
+const jwt = require('jsonwebtoken');
+const bodyParser = require('body-parser');
+
 
 app.use(cors())
-app.use(express.json()); 
+app.use(express.json({ limit: '20mb' }));
+app.use(bodyParser.json({ limit: '20mb' }));
+app.use(bodyParser.urlencoded({ limit: '20mb', extended: true }));
 app.use(express.urlencoded({ extended: true })); 
 // app.use('/public', express.static('public'));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -54,7 +59,6 @@ const seedSuperAdmin = async () => {
 };
 
 
-const jwt = require('jsonwebtoken');
 
 
 

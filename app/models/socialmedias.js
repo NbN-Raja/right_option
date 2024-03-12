@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const SocialMediasSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true
     },
     image: {
         type: String,

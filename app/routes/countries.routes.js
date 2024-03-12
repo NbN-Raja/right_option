@@ -28,23 +28,24 @@ module.exports = (app) => {
 
   // Post All  countries Including Images of countries
   router.post("/countries", countryUpload.single("image"), async function (req, res, next) {
-    if (!req.file) {
-      return res.status(400).json({ success: false, message: "No image provided." });
-    }
+   
     try {
-      const filename = "country-" + req.file.originalname;
-      const outputPath = path.join("./public/images/countries", filename);
+      let imagePath = null; 
 
-      await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
+      if (req.file) {
 
+        const filename = "Countries-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+
+        const outputPath = path.join("./public/images/countries", filename);
+  
+        await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
+        imagePath= `/images/countries/${filename}`;
+
+        }
+      
       const { name, order, description, short_description } = req.body;
 
-      if (!name || !order || !description || !short_description) {
-        return res.status(400).json({ message: "All fields are required" });
-      }
-
-      const imagePath = `/images/countries/${filename}`; 
-      const newCountry = new Country({
+      const result = new Country({
         name,
         order,
         description,
@@ -52,9 +53,9 @@ module.exports = (app) => {
         image: imagePath,
       });
       // Save the new country to the database
-      await newCountry.save();
+      await result.save();
       res.status(200).json({
-        success: true, message: "Country saved successfully", imagePath: imagePath, 
+        success: true, message: "Country saved successfully", result 
       });
     } catch (error) {
       console.error("Error saving country:", error);
@@ -85,16 +86,17 @@ module.exports = (app) => {
   router.put("/countries/:id", countryUpload.single("image"), async function (req, res, next) {
 
     try {
-      if (!req.file) {
-        return res.status(400).send("No file was uploaded.");
-      }
+      let imagePath = null; // Initialize image path
 
-      const filename = "country-" + req.file.originalname;
-      const outputPath = path.join("./public/images/countries", filename);
+      if (req.file) {
 
-      await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
+        const filename = "country-" + req.file.originalname;
+        const outputPath = path.join("./public/images/countries", filename);
+  
+        await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
+        imagePath= `/images/countries/${filename}`;
 
-      const imagePath = `/images/countries/${filename}`; 
+        }
 
       const id = req.params.id;
       const updatedData = {

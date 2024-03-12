@@ -28,24 +28,21 @@ module.exports = (app) => {
   
     // Post All  countries Including Images of countries
     router.post("/success",SuccessImage.single("image"),async function (req, res, next) {
-        if (!req.file) {
-          return res  .status(400)  .json({ success: false, message: "No image provided." });
-        }
+      
         try {
-          const filename = "Success-"+new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
 
-          const outputPath = path.join("./public/images/success", filename);
-  
-          await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
+          let imagePath= null;
+          if (req.file) {
+            const filename = "Success-"+new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
 
+            const outputPath = path.join("./public/images/success", filename);
+    
+            await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
   
-          const { name, order, description } = req.body;
-  
-          if (!name || !order || !description) {
-            return res.status(400).json({ message: "All fields are required" });
+             imagePath = `/images/success/${filename}`; 
           }
+          const { name, order, description } = req.body;
 
-          const imagePath = `/images/success/${filename}`; 
 
           const result = new Success({
             name,
@@ -88,20 +85,16 @@ module.exports = (app) => {
     // Update Country according to ID
     router.put("/success/:id", SuccessImage.single("image"), async function (req, res, next) {
       try {
-        if (!req.file) {
-          return res.status(400).send("No file was uploaded.");
-        }
-    
-        const filename = "Success-"+new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
-        const output = path.join("./public/images/success", filename);
+        let imagePath= null;
+        if (req.file) {
+          const filename = "Success-"+new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+
+          const outputPath = path.join("./public/images/success", filename);
   
-        await sharp(req.file.buffer)
-        .resize(500) // Optional: Resize image to a width of 500px (maintaining aspect ratio)
-        .jpeg({ quality: 70 })  // Convert to JPEG with 70% quality
-        .toFile(output);
+          await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
 
-
-      const imagePath= `/images/succcess/${filename}`;
+           imagePath = `/images/success/${filename}`; 
+        }
     
         const id = req.params.id;
         const updatedData = {

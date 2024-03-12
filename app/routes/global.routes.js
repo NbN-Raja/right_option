@@ -21,29 +21,28 @@ module.exports=(app)=>{
       router.post("/global", imageUpload.fields(imageFields), async (req, res) => {
           try {
               // Check if files are provided
-              if (!req.files) {
-                  return res.status(400).json({ success: false, message: "No image provided." });
-              }
-      
-              const { logo: [logoFile], footer: [FooterFile], icon: [IconFile] } = req.files;
+              if (req.files) {
+                const { logo: [logoFile], footer: [FooterFile], icon: [IconFile] } = req.files;
    
-              const [logoFilename, footerFilename, iconFilename] = ["logo", "footer", "icon"].map(prefix => `${prefix}-${new Date().toISOString().replace(/:/g, "-")}${path.extname(req.files[prefix][0].originalname)}`);
-
-            
-              const [logoFileOutput, footerFileOutput, iconFileOutput] =  ["logo", "footer", "icon"].map(prefix => path.join("./public/images/global", `${prefix}-${new Date().toISOString().replace(/:/g, "-")}${path.extname(req.files[prefix][0].originalname)}`));
-     
-              // Resize and save the uploaded images
-              await Promise.all([
-                  sharp(logoFile.buffer).resize(500).jpeg({ quality: 70 }).toFile(logoFileOutput),
-                  sharp(FooterFile.buffer).resize(500).jpeg({ quality: 70 }).toFile(footerFileOutput),
-                  sharp(IconFile.buffer).resize(500).jpeg({ quality: 70 }).toFile(iconFileOutput)
-              ]);
+                const [logoFilename, footerFilename, iconFilename] = ["logo", "footer", "icon"].map(prefix => `${prefix}-${new Date().toISOString().replace(/:/g, "-")}${path.extname(req.files[prefix][0].originalname)}`);
+  
+              
+                const [logoFileOutput, footerFileOutput, iconFileOutput] =  ["logo", "footer", "icon"].map(prefix => path.join("./public/images/global", `${prefix}-${new Date().toISOString().replace(/:/g, "-")}${path.extname(req.files[prefix][0].originalname)}`));
+       
+                // Resize and save the uploaded images
+                await Promise.all([
+                    sharp(logoFile.buffer).resize(500).jpeg({ quality: 70 }).toFile(logoFileOutput),
+                    sharp(FooterFile.buffer).resize(500).jpeg({ quality: 70 }).toFile(footerFileOutput),
+                    sharp(IconFile.buffer).resize(500).jpeg({ quality: 70 }).toFile(iconFileOutput)
+                ]);
+        
+                // Create a new Global object with the uploaded file details and additional data from req.body
+  
+                logoPath=`/images/global/${logoFilename}`;
+                footerPath=`/images/global/${footerFilename}`;
+                iconPath=`/images/global/${iconFilename}`;              }
       
-              // Create a new Global object with the uploaded file details and additional data from req.body
-
-              logoPath=`/images/global/${logoFilename}`;
-              footerPath=`/images/global/${footerFilename}`;
-              iconPath=`/images/global/${iconFilename}`;
+              
               const result = new Global({
                   ...req.body,
                   logo: logoPath,

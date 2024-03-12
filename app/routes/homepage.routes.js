@@ -6,11 +6,7 @@ module.exports = (app) => {
   // post all
   router.post("/homepage", async (req, res) => {
     try {
-      if (!req.body) {
-        res
-          .status(301)
-          .json({ success: false, error: "All fields are required" });
-      }
+     
 
       const result = new Homepage({
         ...req.body,

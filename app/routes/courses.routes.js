@@ -32,32 +32,37 @@ module.exports = (app) => {
 
 
   // Post All  countries Including Images of countries
+ 
+  
   router.post("/courses", CoursesUpload.single("image"), async function (req, res, next) {
-    if (!req.file) {
-      return res.status(400).json({ success: false, message: "No image provided." });
-    }
     try {
-      const filename = "Courses-"+ req.file.originalname;
-      const outputPath = path.join("./public/images/courses", filename);
+      let imagePath = null; // Initialize image path
+  
+      if (req.file) {
+        // If image is provided
+        const filename = "Courses-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
 
-      await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
-
-      const { name, order, description, short_description } = req.body;
-
-      if (!name || !order || !description || !short_description) {
-        return res.status(400).json({ message: "All fields are required" });
+        const outputPath = path.join("./public/images/courses", filename);
+  
+        await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
+  
+        imagePath = `/images/courses/${filename}`; // Construct the image path
       }
-
-      const imagePath = `/images/courses/${filename}`; // Construct the image path
+  
+      const { name, order, description, short_description } = req.body;
+  
+  
       const result = new Courses({
         name,
         order,
         description,
         short_description,
-        image: imagePath,
+        image: imagePath, // Assign image path (null if no image provided)
       });
+  
       // Save the new Courses to the database
       await result.save();
+      
       res.status(200).json({
         success: true, message: "Data saved successfully", data: result // Save image path
       });
@@ -65,8 +70,8 @@ module.exports = (app) => {
       console.error("Error saving Courses:", error);
       return res.status(500).json({ error: "Internal Server Error", error });
     }
-  }
-  );
+  });
+  
 
   // Getting Single Courses only
   router.get("/courses/:id", async function name(req, res, next) {

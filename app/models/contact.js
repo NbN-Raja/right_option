@@ -3,15 +3,12 @@ const mongoose = require("mongoose");
 const ContactSchema = new mongoose.Schema({
     map: {
         type: String,
-        required: true
     },
     description: {
         type: String,
-        required: true
     },
     email: {
         type: String,
-        required: true,
         // Validate email format
         validate: {
             validator: function(v) {

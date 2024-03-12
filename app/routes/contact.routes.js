@@ -10,19 +10,20 @@ module.exports = (app) => {
 
     router.post("/contact", ContactImage.single("banner_image"), async (req,res)=>{
 
-     // Check the files
-     if (!req.file) 
-     {return res .status(400) .json({ success: false, message: "No image provided." });
-    }
-  
     try {
-      const filename = "Contact-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+      let imagePath = null; // Initialize image path
 
-      const outputPath = path.join("./public/images/contact", filename);
-      await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
+      if(req.file){
+        const filename = "Contact-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
 
+        const outputPath = path.join("./public/images/contact", filename);
+        await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
+  
+  
+         imagePath= `/images/contact/${filename}`;
+      }
 
-      const imagePath= `/images/contact/${filename}`;
+     
      const result= new Contact({
       ...req.body,
       banner_image: imagePath
@@ -54,22 +55,25 @@ module.exports = (app) => {
     }
 
   })
+
+
+
+
   router.put("/contact/:id",ContactImage.single("banner_image"), async (req,res)=>{
-    if (!req.file) {
-      return res.status(400).send("No file was uploaded.");
-    }
 
-    const filename = "Contact-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+    try {
+      
+   
+    let imagePath = null; // Initialize image path
 
-    
-    const output = path.join("./app/public/images/contact", filename);
+      if(req.file){
+        const filename = "Contact-"+ new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
 
-    await sharp(req.file.buffer)
-    .resize(500) // Optional: Resize image to a width of 500px (maintaining aspect ratio)
-    .jpeg({ quality: 70 })  // Convert to JPEG with 70% quality
-    .toFile(output);
-
-    const imagePath= `/images/contact/${filename}`;
+        const outputPath = path.join("./public/images/contact", filename);
+        await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
+  
+         imagePath= `/images/contact/${filename}`;
+      }
 
     const id = req.params.id;
     const updatedData = {
@@ -90,11 +94,13 @@ module.exports = (app) => {
       message: "Success updated successfully.",
       data: result
     });
+  } catch (error) {
+    console.error(error);
+    res.status(401).json({success: false, message:"error occured at",error})
+    
+  }
   })
     
-    
-    
-
 
     app.use("/api",router)
 

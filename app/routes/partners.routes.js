@@ -32,22 +32,23 @@ module.exports = (app) => {
 
   // Post All  Countries Including Images Of Countries
   router.post("/partner", PartnerImage.single("image"), async function (req, res, next) {
-    if (!req.file) {
-      return res.status(400).json({ success: false, message: "No image provided." });
-    }
+    
     try {
-      const filename = "Partner-" + new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
+
+      let imagePath= null;
+
+      if (req.file) {
+        const filename = "Partner-" + new Date().toISOString().replace(/:/g, "-") + req.file.originalname;
       const outputPath = path.join("./public/images/partners", filename);
 
       await sharp(req.file.buffer).resize(500).jpeg({ quality: 70 }).toFile(outputPath);
 
+
+       imagePath = `/images/partners/${filename}`; 
+      }
       const { name, order, description, short_description } = req.body;
 
-      if (!name || !order || !description || !short_description) {
-        return res.status(400).json({ message: "All fields are required" });
-      }
-
-      const imagePath = `/images/partners/${filename}`; 
+      
       const result = new Partner({
         name,
         order,
